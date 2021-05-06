@@ -36,9 +36,11 @@ def criar_pedido():
 
     url = f"http://localhost:5001/verificar_existencia_usuario/{dict_values['Id_usuario']}"
     response = requests.get(url)
-    print(response.status_code, response.status_code==400)
+    print(response.status_code, response.status_code == 400)
     if response.status_code == 400:
         return "Usuário não existe!"
+    if dict_values['Quantidade'] <= 0:
+        return "Você deve selecionar pelo menos um item!"
 
     try:
         Pedidos().criar_pedido(dict_values)
@@ -50,8 +52,10 @@ def criar_pedido():
 
 @app.route("/alterar_pedido/<int:id>", methods=["PUT"])
 def alterar_pedido(id):
-    raw_request = request.data.decode("utf-8")
-    dict_values = json.loads(raw_request)
+    dict_values = request.get_json()
+
+    if dict_values['Quantidade'] <= 0:
+        return "Você deve selecionar pelo menos um item!"
 
     try:
         Pedidos().alterar_pedido(dict_values, id)
@@ -72,4 +76,4 @@ def excluir_pedido(id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

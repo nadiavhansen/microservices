@@ -10,21 +10,19 @@ class Validacoes:
 
     def validar_cpf_ja_cadastrado(self, cpf):
         db = Mysql()
-        resposta = list(db.cursor.find({"Cpf": cpf}))
-        if resposta == []:
+        sql = f"SELECT Cpf from usuarios where Cpf = '{cpf}'"
+        db.cursor.execute(sql)
+        if db.cursor.fetchone():
             return True
         else:
             return False
 
     def validar_email_ja_cadastrado(self, email):
         db = Mysql()
-        resposta = list(db.cursor.find({"Email": email}))
-        if resposta == []:
+        sql = f"SELECT Email from usuarios where Email = '{email}'"
+        db.cursor.execute(sql)
+        if db.cursor.fetchone():
             return True
         else:
             return False
 
-
-
-
-        # response = list(db.alunos_matricula.find({"Matricula": matricula}))

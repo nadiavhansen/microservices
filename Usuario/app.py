@@ -28,8 +28,7 @@ def cadastrar_usuario():
     usuario = Usuario()
 
     try:
-        usuario.cadastrar_usuario(dict_values)
-        return usuario.cadastrar_usuario(dict_values), 200
+        return usuario.cadastrar_usuario(dict_values)
 
     except Exception as error:
         return str(error.args)
@@ -41,11 +40,11 @@ def alterar_cadastro(Cpf):
     dict_values = json.loads(raw_request)
 
     try:
-        Usuario().alterar_usuario(dict_values, Cpf)
-        return "Usuario alterado com sucesso!", 200
+        return Usuario().alterar_usuario(dict_values, Cpf)
 
     except Exception as error:
         return str(error.args)
+
 
 @app.route("/deletar_cadastro/<Cpf>", methods=["DELETE"])
 def excluir_cadastro(Cpf):
@@ -64,4 +63,4 @@ def verificar_existencia_usuario(id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

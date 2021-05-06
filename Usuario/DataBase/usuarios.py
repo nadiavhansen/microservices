@@ -23,6 +23,7 @@ class Usuario:
         self.db.cursor.execute(sql)
         colunas = [i[0] for i in self.db.cursor.description]
         data_frame = pd.DataFrame(self.db.cursor.fetchall(), columns=colunas)
+        print(data_frame)
 
         return data_frame
 
@@ -31,6 +32,7 @@ class Usuario:
         self.db.cursor.execute(sql)
         colunas = [i[0] for i in self.db.cursor.description]
         data_frame = pd.DataFrame(self.db.cursor.fetchall(), columns=colunas)
+
 
         return data_frame
 
@@ -41,24 +43,29 @@ class Usuario:
         sql = f"""INSERT INTO usuarios VALUES (DEFAULT, {sql_values}, '{horario_cadastro}', NULL)"""
         validacoes = Validacoes()
         if not validacoes.validar_cpf(list_values[1]):
-            return "CPF inválido!"
-        if not validacoes.validar_cpf_ja_cadastrado(list_values[1]):
-            return "CPF já cadastrado!"
-        if not validacoes.validar_email_ja_cadastrado(list_values[2]):
-            return "Email já cadastrado!"
+            return "CPF inválido!", 400
+        if validacoes.validar_cpf_ja_cadastrado(list_values[1]):
+            return "CPF já cadastrado!", 400
+        if validacoes.validar_email_ja_cadastrado(list_values[2]):
+            return "Email já cadastrado!", 400
         else:
             self.db.cursor.execute(sql)
-            return "Usuário cadastrado com sucesso!"
+            return "Usuário cadastrado com sucesso!", 200
 
     def alterar_usuario(self, dict_values, cpf):
         horario_alteracao = datetime.now()
         list_keys, list_values = list(dict_values.keys()), list(dict_values.values())
         sql = f"""UPDATE usuarios SET {list_keys[0]} = '{list_values[0]}',
+                                   Cpf = '{cpf}', 
                                    {list_keys[1]} = '{list_values[1]}', 
                                    {list_keys[2]} = '{list_values[2]}', 
-                                   {list_keys[3]} = '{list_values[3]}', 
                                    Alterado = '{horario_alteracao}' WHERE Cpf = {cpf}"""
-        self.db.cursor.execute(sql)
+        validacoes = Validacoes()
+        if validacoes.validar_email_ja_cadastrado(list_values[1]):
+            return "Email já cadastrado!", 400
+        else:
+            self.db.cursor.execute(sql)
+            return "Usuário alterado com sucesso", 200
 
     def excluir_usuario(self, cpf):
         sql = f"""DELETE FROM usuarios WHERE Cpf = {cpf}"""
@@ -70,4 +77,18 @@ class Usuario:
             return "Não existe", 400
         return "Existe", 200
 
-
+    # import base64
+    #
+    # def codificar_dado(dado):
+    #     ascii_dado = dado.encode('ascii')
+    #     dado_codificado_ascii = base64.b64encode(ascii_dado)
+    #     dado_codificado = dado_codificado_ascii.decode('ascii')
+    #
+    #     return dado_codificado
+    #
+    # def decodificar_dado(dado):
+    #     dado_codificado_ascii = dado.encode('ascii')
+    #     dado_decodificado_ascii = base64.b64decode(dado_codificado_ascii)
+    #     dado_decodificado = dado_decodificado_ascii.decode('ascii')
+    #
+    #     return dado_decodificado

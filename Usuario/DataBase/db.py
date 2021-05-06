@@ -1,5 +1,6 @@
 import MySQLdb
 
+
 class Mysql:
 
     def __init__(self):
