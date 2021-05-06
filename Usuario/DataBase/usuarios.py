@@ -1,6 +1,7 @@
 from .db import Mysql
 import pandas as pd
 from datetime import datetime
+from .validacoes import Validacoes
 
 
 def converter_lista_para_sql_string(data: list) -> str:
@@ -38,8 +39,16 @@ class Usuario:
         list_values = list(dict_values.values())
         sql_values = converter_lista_para_sql_string(list_values)
         sql = f"""INSERT INTO usuarios VALUES (DEFAULT, {sql_values}, '{horario_cadastro}', NULL)"""
-        # print(sql)
-        self.db.cursor.execute(sql)
+        validacoes = Validacoes()
+        if not validacoes.validar_cpf(list_values[1]):
+            return "CPF inválido!"
+        if not validacoes.validar_cpf_ja_cadastrado(list_values[1]):
+            return "CPF já cadastrado!"
+        if not validacoes.validar_email_ja_cadastrado(list_values[2]):
+            return "Email já cadastrado!"
+        else:
+            self.db.cursor.execute(sql)
+            return "Usuário cadastrado com sucesso!"
 
     def alterar_usuario(self, dict_values, cpf):
         horario_alteracao = datetime.now()
@@ -54,3 +63,11 @@ class Usuario:
     def excluir_usuario(self, cpf):
         sql = f"""DELETE FROM usuarios WHERE Cpf = {cpf}"""
         self.db.cursor.execute(sql)
+
+    def usuario_existe(self, id_usuario):
+        df = self.exbir_usuario(id_usuario)
+        if df.empty:
+            return "Não existe", 400
+        return "Existe", 200
+
+

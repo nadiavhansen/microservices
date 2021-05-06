@@ -46,22 +46,19 @@ class Pedidos:
         sql_values = converter_lista_para_sql_string(lista_values)
         valor_total = int(lista_values[2]) * float(lista_values[3])
         sql = f"""INSERT INTO pedidos VALUES (DEFAULT, {sql_values}, {valor_total}, '{horario_criar_pedido}', NULL)"""
-        print(sql)
         self.db.cursor.execute(sql)
 
     def alterar_pedido(self, dict_values, id):
         horario_alterar_pedido = datetime.now()
         lista_values, lista_keys = list(dict_values.values()), list(dict_values.keys())
         valor_total = lista_values[2] * lista_values[3]
-        print(valor_total)
-        print(lista_values)
-        print(lista_keys)
         sql = f"""UPDATE pedidos SET {lista_keys[1]} = '{lista_values[1]}',
                                      {lista_keys[2]} = '{lista_values[2]}', 
                                      {lista_keys[3]} = '{lista_values[3]}', 
                                      Preço_total = {valor_total}, 
                                      Alterado = '{horario_alterar_pedido}' WHERE id = {id}"""
-        pass
+        self.db.cursor.execute(sql)
 
-    def excluir_pedido(self):
-        pass
+    def excluir_pedido(self, id_pedido):
+        sql = f"""DELETE FROM pedidos WHERE Id = {id_pedido}"""
+        self.db.cursor.execute(sql)

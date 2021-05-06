@@ -1,6 +1,7 @@
 from flask import Flask, request
-from Pedidos.DataBase.pedidos import Pedidos
+from DataBase.pedidos import Pedidos
 import json
+import requests
 
 app = Flask(__name__)
 
@@ -31,8 +32,13 @@ def exibir_pedido(id):
 
 @app.route("/criar_pedido/", methods=["POST"])
 def criar_pedido():
-    raw_request = request.data.decode("utf-8")
-    dict_values = json.loads(raw_request)
+    dict_values = request.get_json()
+
+    url = f"http://localhost:5001/verificar_existencia_usuario/{dict_values['Id_usuario']}"
+    response = requests.get(url)
+    print(response.status_code, response.status_code==400)
+    if response.status_code == 400:
+        return "Usuário não existe!"
 
     try:
         Pedidos().criar_pedido(dict_values)
@@ -53,6 +59,17 @@ def alterar_pedido(id):
 
     except Exception as error:
         return str(error.args)
+
+
+@app.route("/excluir_pedido/<int:id>", methods=["DELETE"])
+def excluir_pedido(id):
+    try:
+        Pedidos().excluir_pedido(id)
+        return "Pedido deletado com sucesso!", 200
+
+    except Exception as error:
+        return str(error.args)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,5 +1,5 @@
 from flask import Flask, request
-from Usuario.DataBase.usuarios import Usuario
+from DataBase.usuarios import Usuario
 import json
 
 app = Flask(__name__)
@@ -25,10 +25,11 @@ def exibir_usuario(Cpf):
 def cadastrar_usuario():
     raw_request = request.data.decode("utf-8")
     dict_values = json.loads(raw_request)
+    usuario = Usuario()
 
     try:
-        Usuario().cadastrar_usuario(dict_values)
-        return "Usuario cadastrado com sucesso!", 200
+        usuario.cadastrar_usuario(dict_values)
+        return usuario.cadastrar_usuario(dict_values), 200
 
     except Exception as error:
         return str(error.args)
@@ -54,6 +55,12 @@ def excluir_cadastro(Cpf):
 
     except Exception as error:
         return str(error.args)
+
+
+@app.route("/verificar_existencia_usuario/<int:id>", methods=["GET"])
+def verificar_existencia_usuario(id):
+    response = Usuario().usuario_existe(id)
+    return response[0], response[1]
 
 
 if __name__ == "__main__":
