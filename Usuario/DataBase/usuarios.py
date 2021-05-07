@@ -27,7 +27,7 @@ class Usuario:
 
         return data_frame
 
-    def exbir_usuario(self, id_usuario):
+    def exibir_usuario(self, id_usuario):
         sql = f"SELECT * FROM usuarios WHERE id = {id_usuario}"
         self.db.cursor.execute(sql)
         colunas = [i[0] for i in self.db.cursor.description]
@@ -70,9 +70,10 @@ class Usuario:
     def excluir_usuario(self, cpf):
         sql = f"""DELETE FROM usuarios WHERE Cpf = {cpf}"""
         self.db.cursor.execute(sql)
+        return "Cadastro deletado com sucesso!", 200
 
     def usuario_existe(self, id_usuario):
-        df = self.exbir_usuario(id_usuario)
+        df = self.exibir_usuario(id_usuario)
         if df.empty:
             return "Não existe", 400
         return "Existe", 200

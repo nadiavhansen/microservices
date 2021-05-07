@@ -43,8 +43,7 @@ def criar_pedido():
         return "Você deve selecionar pelo menos um item!"
 
     try:
-        Pedidos().criar_pedido(dict_values)
-        return "Pedido realizado com sucesso!", 200
+        return Pedidos().criar_pedido(dict_values)
 
     except Exception as error:
         return str(error.args)
@@ -58,8 +57,7 @@ def alterar_pedido(id):
         return "Você deve selecionar pelo menos um item!"
 
     try:
-        Pedidos().alterar_pedido(dict_values, id)
-        return "Pedido alterado com sucesso!", 200
+        return Pedidos().alterar_pedido(dict_values, id)
 
     except Exception as error:
         return str(error.args)
@@ -68,8 +66,7 @@ def alterar_pedido(id):
 @app.route("/excluir_pedido/<int:id>", methods=["DELETE"])
 def excluir_pedido(id):
     try:
-        Pedidos().excluir_pedido(id)
-        return "Pedido deletado com sucesso!", 200
+        return Pedidos().excluir_pedido(id)
 
     except Exception as error:
         return str(error.args)

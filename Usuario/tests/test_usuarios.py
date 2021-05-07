@@ -13,19 +13,27 @@ class TestUsuario(TestCase):
     @mock.patch("Usuario.DataBase.usuarios.Mysql")
     def test_listar_usuarios_works(self, mock_sql, mock_pd):
         mock_sql().cursor.execute.return_value = None
-        mock_sql().cursor.fetchone.return_value = ""
+        mock_sql().cursor.fetchall.return_value = ""
         mock_pd.DataFrame.return_value = ""
 
         self.assertEqual(Usuario().listar_usuarios(), "")
+
+        mock_sql().cursor.execute.assert_called_once()
+        mock_sql().cursor.fetchall.assert_called_once()
+        mock_pd.DataFrame.assert_called_once()
 
     @mock.patch("Usuario.DataBase.usuarios.pd")
     @mock.patch("Usuario.DataBase.usuarios.Mysql")
     def test_exbir_usuario_works(self, mock_sql, mock_pd):
         mock_sql().cursor.execute.return_values = None
-        mock_sql().cursor.fetchone.return_value = ""
+        mock_sql().cursor.fetchall.return_value = ""
         mock_pd.DataFrame.return_value = ""
 
-        self.assertEqual(Usuario().exbir_usuario(""), "")
+        self.assertEqual(Usuario().exibir_usuario(""), "")
+
+        mock_sql().cursor.execute.assert_called_once()
+        mock_sql().cursor.fetchall.assert_called_once()
+        mock_pd.DataFrame.assert_called_once()
 
     @mock.patch("Usuario.DataBase.usuarios.Validacoes")
     @mock.patch("Usuario.DataBase.usuarios.Mysql")
@@ -34,7 +42,7 @@ class TestUsuario(TestCase):
     def test_cadastrar_usuario_works(self, mock_datetime, mock_converter_lista_para_str, mock_sql, mock_validacoes):
         user = Usuario()
 
-        mock_datetime.now().return_value = ""
+        mock_datetime.now.return_value = ""
         mock_converter_lista_para_str.return_value = ""
 
         mock_validacoes().validar_cpf.return_value = False
@@ -52,14 +60,40 @@ class TestUsuario(TestCase):
         self.assertEqual(user.cadastrar_usuario(lista), ('Email já cadastrado!', 400))
         mock_validacoes().validar_email_ja_cadastrado.return_value = False
 
+        mock_sql().cursor.execute.return_value = ""
+        lista = dict(index1="", index2="", index3="")
+        self.assertEqual(user.cadastrar_usuario(lista), ("Usuário cadastrado com sucesso!", 200))
 
+        mock_datetime.now.assert_called()
+        mock_converter_lista_para_str.assert_called()
+        mock_sql().cursor.execute.assert_called_once()
+        mock_validacoes().validar_cpf.assert_called()
+        mock_validacoes().validar_cpf_ja_cadastrado.assert_called()
+        mock_validacoes().validar_email_ja_cadastrado.assert_called()
 
+    @mock.patch("Usuario.DataBase.usuarios.Mysql")
+    @mock.patch("Usuario.DataBase.usuarios.Validacoes")
+    @mock.patch("Usuario.DataBase.usuarios.datetime")
+    def test_alterar_usuario_works(self, mock_datetime, mock_validacoes, mock_sql):
+        user = Usuario()
+        mock_datetime.now.return_value = ""
 
-    def test_alterar_usuario_works(self):
-        pass
+        mock_validacoes().validar_email_ja_cadastrado.return_value = True
+        lista = dict(index1="", index2="", index3="")
+        self.assertEqual(user.alterar_usuario(lista, ""), ("Email já cadastrado!", 400))
+        mock_validacoes().validar_email_ja_cadastrado.return_value = False
 
-    def test_excluir_usuario_works(self):
-        pass
+        mock_sql().cursor.execute.return_value = ""
+        lista = dict(index1="", index2="", index3="")
+        self.assertEqual(user.alterar_usuario(lista, ""), ("Usuário alterado com sucesso", 200))
 
-    def test_usuario_existe_works(self):
-        pass
+        mock_datetime.now.assert_called()
+        mock_sql().cursor.execute.assert_called_once()
+        mock_validacoes().validar_email_ja_cadastrado.assert_called()
+
+    @mock.patch("Usuario.DataBase.usuarios.Mysql")
+    def test_excluir_usuario_works(self, mock_sql):
+        mock_sql().cursor.execute.return_value = ""
+        self.assertEqual(Usuario().excluir_usuario(""), ("Cadastro deletado com sucesso!", 200))
+
+        mock_sql().cursor.execute.assert_called_once()

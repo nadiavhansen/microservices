@@ -15,7 +15,7 @@ def listar_usuarios():
 
 @app.route("/exibir_usuario/<Cpf>", methods=["GET"])
 def exibir_usuario(Cpf):
-    info = Usuario().exbir_usuario(Cpf)
+    info = Usuario().exibir_usuario(Cpf)
     json = info.to_json(orient="records")
 
     return json
@@ -49,8 +49,7 @@ def alterar_cadastro(Cpf):
 @app.route("/deletar_cadastro/<Cpf>", methods=["DELETE"])
 def excluir_cadastro(Cpf):
     try:
-        Usuario().excluir_usuario(Cpf)
-        return "Cadastro deletado com sucesso!", 200
+        return Usuario().excluir_usuario(Cpf)
 
     except Exception as error:
         return str(error.args)
