@@ -1,5 +1,6 @@
 from unittest import TestCase, mock
 from Usuario.DataBase.usuarios import Usuario, converter_lista_para_sql_string
+import pandas as pd
 
 
 class TestUsuario(TestCase):
@@ -97,3 +98,12 @@ class TestUsuario(TestCase):
         self.assertEqual(Usuario().excluir_usuario(""), ("Cadastro deletado com sucesso!", 200))
 
         mock_sql().cursor.execute.assert_called_once()
+
+    @mock.patch("Usuario.DataBase.usuarios.Usuario.exibir_usuario")
+    def test_usuario_existe_works(self, mock_exibir_usuario):
+        user = Usuario()
+        mock_exibir_usuario.side_effect = [pd.DataFrame([]), pd.DataFrame([""])]
+        self.assertEqual(user.usuario_existe(""), ("Não existe", 400))
+        self.assertEqual(user.usuario_existe(""), ("Existe", 200))
+
+        mock_exibir_usuario.assert_called()
