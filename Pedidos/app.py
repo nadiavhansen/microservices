@@ -1,6 +1,5 @@
 from flask import Flask, request
 from DataBase.pedidos import Pedidos
-import json
 import requests
 
 app = Flask(__name__)
@@ -34,7 +33,7 @@ def exibir_pedido(id):
 def criar_pedido():
     dict_values = request.get_json()
 
-    url = f"http://localhost:5001/verificar_existencia_usuario/{dict_values['Id_usuario']}"
+    url = f"http://api_user:5001/verificar_existencia_usuario/{dict_values['Id_usuario']}"
     response = requests.get(url)
     print(response.status_code, response.status_code == 400)
     if response.status_code == 400:
